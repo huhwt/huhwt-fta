@@ -1,0 +1,106 @@
+<?php
+
+declare(strict_types=1);
+
+use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
+use Fisharebest\Webtrees\Http\RequestHandlers\ManageTrees;
+// use Fisharebest\Webtrees\Http\RequestHandlers\UnconnectedAction;
+use Fisharebest\Webtrees\I18N;
+use Fisharebest\Webtrees\Individual;
+use Fisharebest\Webtrees\Registry;
+use Fisharebest\Webtrees\Tree;
+use Fisharebest\Webtrees\View;
+use Illuminate\Support\Collection;
+
+use HuHwt\WebtreesMods\FamilyTreeAssistant\Http\RequestHandlers\UnconnectedActionUIC;
+use HuHwt\WebtreesMods\FamilyTreeAssistant\Http\RequestHandlers\FTA_ClippingsCartReq;
+
+/**
+ * @var string                            $title
+ * @var bool                              $aliases
+ * @var bool                              $associates
+ * @var Individual                        $root
+ * @var array<Collection<int,Individual>> $individual_groups
+ * @var Tree                              $tree
+ * @var string                            $modRoot
+ * @var bool                              $withCCE
+ */
+
+    $count_uic  = 0;
+    foreach ($individual_groups as $group) {
+        $count_uic += $group->count();
+    }
+    $group_n    = 0;
+
+    $classCCEadapter    = 'noCCEadapter';   // there is no CCE instance active ...      -> display: none
+    $urlCCEadapter      = '';               // ... so is no need to define a data-definition ...
+    $CCEactions         = [];               // ... or to define some actions
+    
+    if ($withCCE) {                         // but when CCE is active then
+        $classCCEadapter = '';                  // ... we want to show the actions
+        $urlCCEadapter   = 'data-url-Cceadapter="' . e(route(FTA_ClippingsCartReq::class, ['tree' => $tree->name()])) . '"'; // ... data-definition
+        $CCEactions      = [ 
+                    '1'  => [ 'action-suff' => '', 'action-text' => 'add individuals to the clippings cart'],
+                    '2'  => [ 'action-suff' => 'wp', 'action-text' => 'add individuals with parents to the clippings cart'],
+                    '3'  => [ 'action-suff' => 'ws', 'action-text' => 'add individuals and spouses to the clippings cart'],
+                    '4'  => [ 'action-suff' => 'wc', 'action-text' => 'add individuals and children to the clippings cart'],
+                    '5'  => [ 'action-suff' => 'wa', 'action-text' => 'add individuals and all relations to the clippings cart'],
+                        ];
+    }
+
+    $id = Registry::idFactory()->id();
+
+?>
+
+<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(ManageTrees::class, ['tree' => $tree->name()]) => I18N::translate('Manage family trees'), $title]]) ?>
+
+<h1><?= $title ?></h1>
+
+<form method="post" action="<?= e(route(UnconnectedActionUIC::class, ['tree' => $tree->name()])) ?>">
+    <?= view('components/checkbox-inline', ['label' => I18N::translate('Include associates'), 'checked' => $associates, 'name' => 'associates']) ?>
+    <?= view('components/checkbox-inline', ['label' => I18N::translate('Include aliases'), 'checked' => $aliases, 'name' => 'aliases']) ?>
+
+    <button type="submit" class="btn btn-primary">
+        <?= I18N::translate('execute') ?>
+    </button>
+
+    <?= csrf_field() ?>
+</form>
+
+<h4 id="uic-header" class="uic-h4" <?= $urlCCEadapter ?> ><?= I18N::translate('%s individuals are not related to ', I18N::number($count_uic)) . $root->fullName() ?></h4>
+
+<?php foreach ($individual_groups as $group) : ?>
+    <?php $group_n += 1; ?>
+    <div class="uic-h3">
+        <div><span><?= I18N::translate('group ') . I18N::number($group_n) . ': '?></span></div>
+        <div><?= I18N::plural('%s individual', '%s individuals', count($group), I18N::number(count($group))) ?></div>
+        <?php if ($withCCE): ?>
+            <div class="dropdown position-static wt-chart-box-links">
+                <a class="wt-chart-box-icon" href="#" role="button" id="chart-box-menu-<?= $id ?>" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="cce-icon-basket" title="<?= I18N::translate('Add this records to the clippings cart') ?>" ?>"></i>
+                    <span class="visually-hidden"><?= I18N::translate('Add this records to the clippings cart') ?>" ?></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end wt-chart-box-dropdown wt-chart-box-links-dropdown" style="position: inherit" aria-labelledby="#chart-box-menu-<?= $id ?>">
+                    <?php foreach ($CCEactions as $key => $action) : ?>
+                        <a class="dropdown-item p-1" gid="<?= I18N::number($group_n) ?>" action-key="<?= $action['action-suff'] ?>">
+                            <?= I18N::translate($action['action-text']) ?>
+                        </a>
+                    <?php endforeach ?>
+                </div>
+            </div>
+        <?php endif ?>
+    </div>
+    <ul gid="<?= I18N::number($group_n) ?>">
+        <?php foreach ($group as $individual) : ?>
+            <li pid="<?= $individual->xref() ?>">
+                <a href="<?= e($individual->url()) ?>"><?= $individual->fullName() ?></a>
+            </li>
+        <?php endforeach ?>
+    </ul>
+<?php endforeach ?>
+
+<?= View::push('javascript'); ?>
+<script>
+  UIC_prepPevents();
+</script>
+<?= View::endpush(); ?>

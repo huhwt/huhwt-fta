@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * HuH Extensions for webtrees - Multi-Treeview
+ * Extensions for webtrees to check and display duplicate Individuals in the database.
+ * Copyright (C) 2020-2022 EW.Heinrich
+ * 
+ * derived from resources/views/modules/interactive-tree/page.phtml    (wt2.0)
+ */
+
+use Fisharebest\Webtrees\View;
+
+/**
+ * @var string          $title
+ * @var array<string>   $html_ar
+ * @var array<string>   $js_ar
+ */
+
+?>
+
+<h3 class="wt-page-title">
+    <?= $title ?>
+</h3>
+
+<?php for ( $i = 0, $iE = count($html_ar); $i < $iE; ++$i) : ?>
+    <?php $html = $html_ar[$i] ?>
+    <div class="wt-page-content wt-chart wt-chart-interactive">
+        <?= $html ?>
+    </div>
+    <?php $js = $js_ar[$i] ?>
+    <?php View::push('javascript') ?>
+    <script>
+        <?= $js ?>
+    </script>
+    <?php View::endpush() ?>
+<?php endfor ?>

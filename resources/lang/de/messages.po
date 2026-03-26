@@ -1,0 +1,89 @@
+msgid ""
+msgstr "Project-Id-Version: 1.0\nPOT-Creation-Date: 22.10.2020\nPO-Revision-Date: \nLast-Translator: EW.H <ewh@huh-netz.de>\nLanguage-Team: \nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nLanguage: de\nX-Generator: Poedit 2.4.1\n"
+
+#: MultTreeView.php:169
+msgid "MultTreeView"
+msgstr "Mehrfach-Diagramm"
+
+#: MultTreeView.php:175
+msgid "A treeview-diagram, showing the ancestors and descendants of an individual."
+msgstr "Ein Sanduhrdiagramm, welches die Vorfahren und Nachkommen einer Person darstellt."
+
+#: app/Http/RequestHandlers/MultTreeViewRH.php:87
+msgid "Check tree of %s"
+msgstr "Vergleich Sanduhrdiagramm von %s"
+
+#: app/Http/RequestHandlers/MultTreeViewRH.php:94
+msgid "Tree of %s"
+msgstr "Sanduhrdiagramm von %s"
+
+#: app/Http/RequestHandlers/MultTreeViewRH.php:94
+msgid "List of Individuals"
+msgstr "Übersicht Personen"
+
+#: resources/views/admin/trees-duplicates.phtml:45
+msgid "Interactive check"
+msgstr "Interaktiver Vergleich"
+
+#: resources/views/layouts/default.phtml:210
+msgid "previous "
+msgstr "vorheriges "
+
+#: resources/views/layouts/default.phtml:211
+msgid "next "
+msgstr "nächstes "
+
+#: resources/views/layouts/default.phtml:212
+msgid "Play "
+msgstr "Abspielen "
+
+#: resources/views/layouts/default.phtml:213
+msgid "Stop "
+msgstr "Stop "
+
+#: resources/views/layouts/default.phtml:214
+msgid "close "
+msgstr "Ende "
+
+#: resources/views/layouts/trees-duplicates.phtml:21
+msgid "count"
+msgstr "Anzahl"
+
+#: Ergänzung Config-Panel
+msgid "Options for stricter selection through additional clauses"
+msgstr "Optionen für strengere Auswahl durch zusätzliche Klauseln"
+
+msgid "only"
+msgstr "nur"
+
+msgid "Match only in"
+msgstr "Übereinstimmung nur in"
+
+msgid "Matched only by"
+msgstr "Übereinstimmung nur gemäß"
+
+msgid "(omitted)"
+msgstr "(entfällt)"
+
+#: Ergänzung CCE-Anbindung
+msgid "Add this records to the clippings cart"
+msgstr "Einträge zum Sammelbehälter hinzufügen"
+
+msgid "Date check performed on facts of type"
+msgstr "Datumsprüfung ausgeführt für Fakten vom Typ"
+
+msgid "Name check performed only for table field 'n_type'"
+msgstr "Namenprüfung ausgeführt nur für Tabellenfeld"
+
+#: FamilyTreeAssistant.php:172
+msgid "Family trees Assistant"
+msgstr "Stammbaum Verwaltung - Assistent"
+
+msgid "%s individuals are not related to "
+msgstr "%s Personen sind nicht verbunden mit "
+
+msgid "group "
+msgstr "Gruppe "
+
+msgid "execute"
+msgstr "Aktualisieren"

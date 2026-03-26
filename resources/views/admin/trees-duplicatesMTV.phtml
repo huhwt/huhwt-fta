@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * HuH Extensions for webtrees - Multi-Treeview
+ * Extensions for webtrees to check and display duplicate Individuals in the database.
+ * Copyright (C) 2020-2022 EW.Heinrich
+ * 
+ * derived from resources/views/admin/trees-duplicates.phtml    (wt2.0)
+ */
+
+use Fisharebest\Webtrees\Http\RequestHandlers\ControlPanel;
+use Fisharebest\Webtrees\Http\RequestHandlers\ManageTrees;
+use Fisharebest\Webtrees\Http\RequestHandlers\MergeFactsPage;
+use Fisharebest\Webtrees\I18N;
+
+use HuHwt\WebtreesMods\FamilyTreeAssistant\Http\RequestHandlers\MultTreeViewRH;
+
+$cat_checkI = I18N::translate('Individuals');       /** EW.H - MOD ... übersetzte Kategorie auswerten */
+
+$ntOpt_txt = I18N::translate("Name check performed only for table field 'n_type'") . ': ' . $ntOpt;
+$dfOpt_txt = I18N::translate("Date check performed on facts of type") . ': ' . $dfOpt;
+
+?>
+
+<?= view('components/breadcrumbs', ['links' => [route(ControlPanel::class) => I18N::translate('Control panel'), route(ManageTrees::class, ['tree' => $tree->name()]) => I18N::translate('Manage family trees'), $title]]) ?>
+
+<h1><?= $title ?></h1>
+<!-- EW.H - MOD ... trees-duplicates extended -->
+<?php foreach ($duplicates as $category => $records) : ?>
+
+    <?php if (!empty($records)) : ?>
+        <?php $txt_cnt =  I18N::translate('count'); ?>
+        <h2><?= $category ?></h2>
+        <?= $txt_cnt . " " . $category ?>: <?= count($records) ?> - <?= $txt_cnt . " " . I18N::translate('XREFs') ?>: <?= $dup_cnts[$category] ?>
+        <?php if ($category === $cat_checkI) : ?>       <? /** EW.H - MOD ... Zusatzaktion bei 'Individuals' */ ?>
+            <br> <?= $ntOpt_txt ?> <br> <?= $dfOpt_txt ?> <br>
+        <?php endif ?>
+        <ul>
+            <?php foreach ($records as $duplicates) : ?>
+                <li>
+                    <?php $dt = $duplicates[0]->fullName() ?>
+                    <?php if ($category === $cat_checkI) : ?>       <? /** EW.H - MOD ... Zusatzaktion bei 'Individuals' */ ?>
+                        <?php if (str_ends_with($dt, ")")) { $dt = substr($dt, 0, strpos($dt, "(") - 1); } ?>  <? /** EW.H - MOD ... be aware of other extension occasionally had added ID */ ?>
+                        <?php $dt = $dt . "&nbsp;(" . $duplicates[0]->lifespan() . ")&nbsp;"; ?>
+                    <?php endif ?>
+                    <?= $dt ?>
+                    <?php $xrefs = []; ?>                           <? /** EW.H - MOD ... Struktur für gesammelte XREF */ ?>
+                    <?php foreach ($duplicates as $record) : ?>
+                        —
+                        <a href="<?= e($record->url()) ?>">
+                            <?= $record->xref() ?>
+                        </a>
+                        <?php $xrefs[] = $record->xref() ?>         <? /** EW.H - MOD ... XREF sammeln */ ?>
+                    <?php endforeach ?>
+                    <?php if (count($duplicates) === 2) : ?>
+                        —
+                        <a href="<?= e(route(MergeFactsPage::class, ['tree' => $tree->name(), 'xref1' => $duplicates[0]->xref(), 'xref2' => $duplicates[1]->xref()])) ?>">
+                            <?= I18N::translate('Merge') ?>
+                        </a>
+                    <?php endif ?>
+                    <?php if (count($duplicates) > 2) : ?>
+                            — ...
+                        <?php endif ?>
+                    <?php if ($category === $cat_checkI) : ?>       <? /** EW.H - MOD ... Zusatzaktion bei 'Individuals' */ ?>
+                        <?php $xrefs = implode(",", $xrefs) ?>
+                        —
+                        <a href="<?= e(route(MultTreeViewRH::class, ['tree' => $tree->name(),
+                            'xrefs' => $xrefs])) ?>">
+                            <?= I18N::translate('Interactive check') ?>
+                        </a>
+                    <?php endif ?>
+                </li>
+            <?php endforeach ?>
+        </ul>
+    <?php else : ?>
+        <h2><?= $category ?></h2>
+        <p><?= I18N::translate('No duplicates have been found.') ?></p>
+    <?php endif ?>
+<?php endforeach ?>
